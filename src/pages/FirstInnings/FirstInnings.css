@@ -1,0 +1,2684 @@
+* { box-sizing: border-box; }
+
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body { margin: 0; background: #050b12; }
+
+button { font: inherit; }
+
+.first-innings-page {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  color: #fff;
+  background: #050b12;
+}
+
+.game-topbar {
+  height: 58px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: rgba(3,9,17,.96);
+  position: relative;
+  z-index: 50;
+}
+
+.exit-button {
+  width: 86px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 6px;
+  color: #fff;
+  background: rgba(255,255,255,.025);
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.exit-button:hover { border-color: #ffc400; color: #ffc400; }
+
+.game-logo {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-style: italic;
+}
+.game-logo span { color: #8d949c; font-size: 11px; font-weight: 900; }
+.game-logo strong { color: #ffc400; font-size: 15px; font-weight: 1000; }
+
+.live-pill {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #ff5360;
+  font-size: 9px;
+  font-weight: 950;
+}
+.live-pill i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #ff3043; box-shadow: 0 0 12px #ff3043;
+  animation: pulse 1.2s infinite;
+}
+@keyframes pulse { 50% { opacity: .25; } }
+
+.scoreboard {
+  width: min(1020px, 94vw);
+  min-height: 78px;
+  margin: 11px auto 0;
+  padding: 10px 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 11px;
+  background: rgba(4,18,32,.9);
+  position: relative;
+  z-index: 20;
+}
+
+.score-team { display: flex; align-items: center; gap: 10px; }
+.team-badge {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid rgba(255,196,0,.35);
+  color: #ffc400; background: rgba(255,196,0,.05);
+  font-weight: 1000;
+  overflow: hidden;
+}
+.team-badge img { width: 100%; height: 100%; object-fit: contain; }
+.score-team small, .score-over small {
+  display: block; color: #6d7680; font-size: 7px; font-weight: 900; letter-spacing: 1px;
+}
+.score-team b { display: block; margin-top: 2px; font-size: 13px; }
+
+.score-center { text-align: center; }
+.score-center strong { display: block; font-size: 32px; line-height: 1; font-style: italic; }
+.score-center em { color: #69727c; font-size: 18px; font-style: italic; }
+.score-center span, .score-over span {
+  display: block; margin-top: 3px; color: #626c76; font-size: 7px; font-weight: 900;
+}
+
+.score-over { justify-self: end; text-align: right; }
+.score-over b { display: block; color: #ffc400; font-size: 24px; line-height: 1; margin-top: 3px; }
+
+.game-wrapper {
+  width: min(1280px, 100vw);
+  margin: 12px auto 0;
+  position: relative;
+  padding: 0 10px 42px;
+}
+
+.game-scene {
+  height: min(680px, calc(100vh - 210px));
+  min-height: 520px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.11);
+  background:
+    linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.06)),
+    url("/background.png") center center / cover no-repeat;
+  box-shadow: 0 25px 70px rgba(0,0,0,.5);
+}
+
+/* Sky */
+.sky {
+  position: absolute; inset: 0 0 81% 0;
+  background: linear-gradient(180deg, #22b8f0 0%, #55cbef 75%, #8fdcef 100%);
+  z-index: 1;
+}
+.sun {
+  position: absolute; width: 22px; height: 22px; border-radius: 50%;
+  left: 44%; top: 26%;
+  background: radial-gradient(circle, #fffbe0, #ffe873 60%, #ffd23f);
+  box-shadow: 0 0 20px 5px rgba(255,232,150,.7);
+}
+.cloud { position: absolute; width: 64px; height: 12px; border-radius: 20px; background: rgba(255,255,255,.95); }
+.cloud::before, .cloud::after {
+  content: ""; position: absolute; border-radius: 50%; background: inherit;
+}
+.cloud::before { width: 28px; height: 28px; left: 10px; bottom: 0; }
+.cloud::after { width: 22px; height: 22px; left: 34px; bottom: 0; }
+.cloud-one { left: 6%; top: 14%; }
+.cloud-two { right: 12%; top: 22%; transform: scale(.78); }
+.cloud-three { left: 42%; top: 8%; transform: scale(.6); opacity: .85; }
+
+/* Floodlight towers */
+.floodlight {
+  position: absolute; top: 2%; width: 6px; height: 17%;
+  background: linear-gradient(180deg, #cfd6dc, #8993a0);
+  z-index: 6; border-radius: 2px 2px 0 0;
+}
+.floodlight-left { left: 7%; }
+.floodlight-right { right: 7%; }
+.light-head {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  width: 34px; height: 14px; border-radius: 3px;
+  background: #4a5561; border: 1px solid #232a31;
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; padding: 2px;
+}
+.light-head span {
+  border-radius: 50%; background: radial-gradient(circle, #fff9dd, #ffe873 70%);
+  box-shadow: 0 0 6px 1px rgba(255, 232, 150, .8);
+}
+.floodlight::before {
+  content: "";
+  position: absolute; left: 50%; bottom: 0; width: 46px; height: 100%;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 2px, transparent 2px 10px);
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+  opacity: .35;
+}
+
+/* Stadium / crowd */
+.stadium-stand {
+  position: absolute; left: 0; right: 0; top: 15%; height: 16%;
+  overflow: hidden;
+  z-index: 2;
+  background: linear-gradient(180deg, #6b5330 0%, #3c2c17 100%);
+}
+
+.jumbotron {
+  position: absolute; left: 50%; top: 6%; transform: translateX(-50%);
+  z-index: 5; width: 15%; min-width: 92px; height: 34%;
+  border: 2px solid #2b333b; border-radius: 3px;
+  background: #04141f;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: 0 0 10px rgba(0,0,0,.5), inset 0 0 8px rgba(77,228,155,.15);
+}
+.jumbotron b {
+  color: #ffc400; font-size: 7px; font-weight: 1000; letter-spacing: 1px; font-style: italic;
+}
+.jumbotron span {
+  color: #4de49b; font-size: 4.5px; font-weight: 900; letter-spacing: 1.5px; margin-top: 1px;
+}
+
+.stand-tier { position: absolute; left: 0; right: 0; overflow: hidden; }
+.stand-tier-upper { top: 0; height: 42%; }
+.stand-tier-lower { top: 42%; bottom: 0; }
+.stand-tier-upper::before, .stand-tier-lower::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 15px,
+    rgba(255, 220, 90, .55) 15px 17px
+  );
+}
+.stand-tier-lower::before { background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 15px,
+    rgba(255, 210, 70, .35) 15px 17px
+  );
+}
+
+.crowd {
+  position: absolute; left: 0; right: 0; bottom: 0; top: 30%;
+  display: grid; grid-template-columns: repeat(34, 1fr); align-items: end; gap: 1px;
+  padding: 0 1%;
+}
+.crowd-dense { grid-template-columns: repeat(46, 1fr); top: 22%; }
+.crowd i {
+  width: 100%; aspect-ratio: 1; margin: auto;
+  border-radius: 50% 50% 45% 45%;
+  background: #5c9a4a;
+  opacity: .95;
+}
+.crowd i:nth-child(6n) { background: #2c2c2c; }
+.crowd i:nth-child(5n) { background: #d98a3d; }
+.crowd i:nth-child(7n) { background: #7cae52; }
+.crowd i:nth-child(4n) { background: #c65f3d; }
+.crowd i:nth-child(11n) { background: #2c6fbd; }
+.crowd i:nth-child(13n) { background: #d9d9d9; }
+
+/* Sponsor hoarding + boundary rope */
+.boundary-hoarding {
+  position: absolute; left: 0; right: 0; top: 29.3%; height: 1.9%;
+  z-index: 3;
+  background: repeating-linear-gradient(
+    90deg,
+    #0f3a63 0 60px,
+    #0f3a63 60px 62px,
+    #b8232f 62px 118px,
+    #b8232f 118px 120px,
+    #12633c 120px 176px,
+    #12633c 176px 178px,
+    #c98a12 178px 232px,
+    #c98a12 232px 234px
+  );
+  box-shadow: 0 1px 4px rgba(0,0,0,.35);
+}
+
+.boundary-wall {
+  position: absolute; left: 0; right: 0; top: 31.2%; height: 2px;
+  background: rgba(255,255,255,.9);
+  border: none;
+  z-index: 3;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+
+.outfield {
+  position: absolute; inset: 31% 0 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #74c144 0%, #5aac33 30%, #429127 70%, #357d20 100%);
+  z-index: 1;
+}
+.mow-stripes {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(100deg, rgba(255,255,255,.05) 0 46px, rgba(0,0,0,.045) 46px 92px);
+}
+.boundary-line {
+  position: absolute; left: -4%; right: -4%; top: 2%;
+  height: 97%; border: 3px solid rgba(255,255,255,.75);
+  border-radius: 50% 50% 0 0 / 20% 20% 0 0;
+}
+.inner-circle {
+  position: absolute; left: 50%; top: 46%; width: 78%; height: 82%;
+  transform: translate(-50%, -12%);
+  border: 2px dashed rgba(255,255,255,.4);
+  border-radius: 50%;
+}
+
+/* =========================================================
+   FRIEND'S ACTUAL PITCH BACKGROUND LAYER
+========================================================= */
+
+.friend-pitch-background {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.08)),
+    url("/1789916749664.png") center center / cover no-repeat;
+}
+
+/* Keep game overlays readable over the photo/background. */
+.game-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3, 12, 20, .03) 0%,
+      rgba(3, 12, 20, .02) 45%,
+      rgba(3, 12, 20, .08) 100%
+    );
+}
+
+/* =========================================================
+   FRIEND'S PITCH BACKGROUND
+   1789916749664.png is supplied by the group member and is used
+   as the actual cricket-field/pitch artwork.
+========================================================= */
+
+.pitch {
+  position: absolute;
+  width: 34%;
+  min-width: 260px;
+  height: 72%;
+  left: 50%;
+  top: 27%;
+  transform: translateX(-50%);
+  background: transparent;
+  clip-path: none;
+  box-shadow: none;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.pitch-lines,
+.pitch-footmarks,
+.pitch-footmarks::after,
+.crease {
+  display: none;
+}
+
+.pitch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+
+
+/* HUD / delivery — styled as an in-scene stadium signboard */
+.game-hud {
+  position: absolute; left: 50%; top: 4px; transform: translateX(-50%);
+  z-index: 40; display: flex; gap: 8px; align-items: center;
+  padding: 6px 14px; border: 2px solid #e9f4ff;
+  border-radius: 4px; background: #1c73c9;
+  font-size: 8px; font-weight: 950;
+  box-shadow: 0 4px 10px rgba(0,0,0,.35);
+}
+.game-hud::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 60px;
+  height: 22px;
+  transform: translateX(-50%);
+  background:
+    repeating-linear-gradient(45deg, rgba(60,68,58,.9) 0 2px, transparent 2px 8px),
+    repeating-linear-gradient(-45deg, rgba(60,68,58,.9) 0 2px, transparent 2px 8px),
+    linear-gradient(180deg, rgba(70,80,66,.5), rgba(40,48,38,.65));
+  border: 1px solid rgba(255,255,255,.15);
+}
+.game-hud span { color: #fff; }
+.game-hud b { color: #ffe873; }
+
+.delivery-panel {
+  position: absolute; left: 50%; top: 66px; transform: translateX(-50%);
+  z-index: 60; width: min(760px, 88vw);
+  padding: 11px 12px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 12px;
+  background: rgba(2,12,21,.95);
+  box-shadow: 0 15px 45px rgba(0,0,0,.45);
+}
+.delivery-title { text-align: center; margin-bottom: 9px; }
+.delivery-title small { display:block; color:#ffc400; font-size:7px; font-weight:1000; letter-spacing:1.5px; }
+.delivery-title b { display:block; margin-top:2px; font-size:18px; font-style:italic; }
+.delivery-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+.delivery-grid button {
+  min-height: 58px; border:1px solid rgba(255,255,255,.1); border-radius:8px;
+  color:#fff; background:rgba(255,255,255,.035); cursor:pointer;
+}
+.delivery-grid button:hover { border-color:#ffc400; background:rgba(255,196,0,.08); transform:translateY(-2px); }
+.delivery-grid button span { display:block; font-size:20px; }
+.delivery-grid button strong { display:block; font-size:7px; margin-top:2px; }
+.delivery-grid button small { display:block; color:#65717d; font-size:6px; margin-top:2px; }
+
+.bottom-status {
+  position: absolute; left: 14px; top: 34%; transform: none;
+  z-index: 35; padding: 5px 10px; border-radius: 10px;
+  color: #d8d8d8; background: rgba(0,0,0,.42); font-size: 7px; font-weight: 950; letter-spacing: 1px;
+}
+
+.over-tracker {
+  position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+  z-index:40; width:min(500px,80vw); height:40px; padding:5px 10px;
+  display:flex; align-items:center; justify-content:space-between;
+  border:1px solid rgba(255,255,255,.1); border-radius:8px;
+  background:rgba(2,13,24,.94);
+}
+.over-tracker small { display:block; color:#6d7780; font-size:6px; font-weight:900; }
+.over-tracker b { color:#ffc400; font-size:8px; }
+.over-balls { display:flex; gap:5px; }
+.over-balls i {
+  width:21px; height:21px; display:grid; place-items:center;
+  border:1px solid rgba(255,255,255,.1); border-radius:50%;
+  color:#6b7580; background:#0b1825; font-size:7px; font-style:normal; font-weight:900;
+}
+.over-balls i.done { color:#05131d; background:#ffc400; border-color:#ffc400; }
+.over-balls i.current { color:#fff; border-color:#4de49b; box-shadow:0 0 10px rgba(77,228,155,.3); }
+
+/* Question becomes a full game overlay */
+.question-overlay {
+  position:absolute; inset:0; z-index:100;
+  display:grid; place-items:center;
+  padding:20px;
+  background:rgba(0,6,12,.76);
+  backdrop-filter:blur(5px);
+  animation: overlayIn .22s ease-out;
+}
+@keyframes overlayIn { from { opacity:0; } to { opacity:1; } }
+
+.question-card {
+  width:min(850px,94vw);
+  max-height:92%;
+  overflow:auto;
+  padding:18px 20px 20px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:14px;
+  background:linear-gradient(145deg,rgba(4,18,31,.98),rgba(2,10,19,.98));
+  box-shadow:0 25px 80px rgba(0,0,0,.6);
+}
+.question-timer {
+  display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:center;
+}
+.timer-left { display:flex; align-items:center; gap:8px; color:#ffc400; font-size:11px; }
+.timer-left span { color:#6d7781; font-size:7px; font-weight:900; }
+.timer-left b { display:block; color:#ffc400; font-size:16px; margin-top:1px; }
+.timer-line { height:5px; border-radius:5px; overflow:hidden; background:#182431; }
+.timer-line i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#4de59b,#ffc400); transition:width 1s linear; }
+.question-timer.danger .timer-left, .question-timer.danger .timer-left b { color:#ff5360; }
+.question-timer.danger .timer-line i { background:#ff5360; }
+
+.question-meta { margin-top:14px; color:#ffc400; font-size:8px; font-weight:1000; letter-spacing:1.2px; }
+.question-meta span { color:#6f7983; }
+.question-card h1 {
+  margin:10px 0 15px; text-align:center; font-size:clamp(19px,2.5vw,31px); line-height:1.15;
+}
+.answers { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.answer {
+  min-height:56px; padding:9px 12px; display:flex; align-items:center; gap:10px;
+  text-align:left; color:#dce2e7; background:#0b1825;
+  border:1px solid rgba(255,255,255,.1); border-radius:8px; cursor:pointer;
+}
+.answer:hover:not(:disabled) { border-color:#ffc400; transform:translateY(-1px); }
+.answer > span {
+  width:28px; height:28px; flex:none; display:grid; place-items:center; border-radius:6px;
+  color:#ffc400; background:rgba(255,196,0,.08); font-size:9px; font-weight:1000;
+}
+.answer b { font-size:11px; }
+.answer svg { margin-left:auto; color:#43e798; }
+.answer.correct { border-color:#43e798; background:rgba(67,231,152,.08); }
+.answer.wrong { border-color:#ff4e5d; background:rgba(255,78,93,.08); }
+.answer.reveal-correct { border-color:rgba(67,231,152,.65); }
+
+.answer-result {
+  margin:14px auto 0; width:max-content; min-width:190px; padding:10px 20px;
+  display:grid; grid-template-columns:auto 1fr; column-gap:8px; align-items:center;
+  border-radius:10px; text-align:center; animation: resultCard .35s ease-out;
+}
+.answer-result svg { grid-row:span 2; font-size:18px; }
+.answer-result strong { font-size:20px; font-style:italic; }
+.answer-result small { color:rgba(255,255,255,.55); font-size:7px; font-weight:900; letter-spacing:1px; }
+.answer-result.six { color:#ffe600; border:1px solid #ffe600; background:rgba(255,230,0,.07); }
+.answer-result.four { color:#ff9a21; border:1px solid #ff9a21; background:rgba(255,154,33,.07); }
+.answer-result.two { color:#51adff; border:1px solid #51adff; background:rgba(81,173,255,.07); }
+.answer-result.wicket { color:#ff5865; border:1px solid #ff5865; background:rgba(255,88,101,.07); }
+@keyframes resultCard { from { opacity:0; transform:translateY(8px) scale(.92); } }
+
+.next-ball {
+  margin:15px auto 0; display:flex; align-items:center; justify-content:center; gap:8px;
+  min-width:170px; padding:11px 18px; border:0; border-radius:8px;
+  color:#081018; background:#ffc400; font-size:10px; font-weight:1000; cursor:pointer;
+}
+.next-ball:hover { filter:brightness(1.08); transform:translateY(-1px); }
+.next-ball:disabled { opacity:.6; cursor:wait; }
+
+.run-rule {
+  min-height:32px; display:flex; justify-content:center; align-items:center; gap:20px;
+  color:#6f7881; font-size:7px; font-weight:900; padding:3px 10px 10px;
+}
+.run-rule span:first-child { color:#ffc400; }
+.run-rule svg { margin-right:4px; }
+
+.innings-loading {
+  min-height:100vh; display:grid; place-items:center; align-content:center; gap:8px;
+  color:#ffc400; background:#050b12;
+}
+.innings-loading svg { font-size:28px; }
+.innings-loading h2 { color:#fff; font-size:16px; }
+
+@media (max-width: 800px) {
+  .scoreboard { width:96vw; }
+  .game-scene { min-height:470px; height:70vh; border-radius:10px; }
+  .delivery-panel { width:94vw; }
+  .delivery-grid { grid-template-columns:repeat(3,1fr); }
+  .answers { grid-template-columns:1fr; }
+  .run-rule { flex-wrap:wrap; gap:8px 14px; }
+}
+
+@media (max-width: 520px) {
+  .game-topbar { padding:0 9px; }
+  .game-logo span { display:none; }
+  .game-logo strong { font-size:12px; }
+  .scoreboard { min-height:66px; padding:7px 9px; }
+  .team-badge { width:34px; height:34px; }
+  .score-center strong { font-size:24px; }
+  .score-over b { font-size:19px; }
+  .game-wrapper { padding-left:4px; padding-right:4px; }
+  .game-scene { min-height:430px; }
+  .delivery-grid button { min-height:54px; }
+  .over-tracker { width:92vw; }
+}
+
+
+.target-banner {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  padding: 8px 16px;
+  border: 1px solid rgba(255,196,0,.4);
+  border-radius: 999px;
+  background: rgba(3,12,20,.88);
+  color: #d7dde3;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  box-shadow: 0 0 24px rgba(255,196,0,.08);
+}
+.target-banner b { color: #ffc400; }
+
+
+/* =========================================================
+   CRICKET SCENE SUPPORT STYLES
+   Added for the existing FirstInningsPage.tsx
+========================================================= */
+
+/* Decorative scoreboard tower */
+.score-tower {
+  position: absolute;
+  left: 4%;
+  top: 10%;
+  width: 92px;
+  height: 110px;
+  z-index: 5;
+  opacity: .9;
+}
+
+.tower-legs {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 54px;
+  height: 72px;
+  transform: translateX(-50%);
+  border-left: 4px solid rgba(35,45,54,.85);
+  border-right: 4px solid rgba(35,45,54,.85);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 8px,
+      rgba(35,45,54,.5) 8px 11px
+    );
+}
+
+.tower-screen {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 76px;
+  height: 42px;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  border: 3px solid #27313a;
+  border-radius: 4px;
+  background: #06121b;
+  box-shadow: 0 5px 14px rgba(0,0,0,.35);
+}
+
+.tower-screen b {
+  color: #ffc400;
+  font-size: 17px;
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+/* Background crowd/field */
+.field-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wheat-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 69%;
+  height: 20px;
+  display: flex;
+  justify-content: space-around;
+  opacity: .45;
+}
+
+.wheat-row i {
+  width: 2px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e8d88b;
+  transform: rotate(12deg);
+}
+
+.bug-crowd {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  top: 17%;
+  height: 13%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  overflow: hidden;
+}
+
+.bug {
+  width: 7px;
+  height: 8px;
+  border-radius: 50% 50% 35% 35%;
+  background: #314f35;
+  opacity: .85;
+}
+
+.bug-1 { transform: translateY(-2px) scale(.8); background:#5c7545; }
+.bug-2 { transform: translateY(1px) scale(.65); background:#283f32; }
+.bug-3 { transform: translateY(-1px) scale(.9); background:#71844e; }
+
+/* Umpire */
+.umpire {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 42px;
+  height: 60px;
+  transform: translate(-50%, -50%) scale(.65);
+  z-index: 11;
+}
+
+.umpire .figure-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.umpire-body {
+  fill: #26333e;
+  stroke: #17212a;
+  stroke-width: 2;
+}
+
+.umpire-antenna {
+  stroke: #26333e;
+}
+
+/* Figure SVG styles */
+.fig-leg {
+  fill: none;
+  stroke: #dba36b;
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+
+.fig-leg-band {
+  fill: none;
+  stroke: #f4f4f4;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.fig-antenna {
+  fill: none;
+  stroke: #26352e;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.fig-bug-body {
+  fill: #e58b32;
+  stroke: #9f5a25;
+  stroke-width: 2;
+}
+
+.fig-eye-white {
+  fill: #fff;
+  stroke: #26352e;
+  stroke-width: 1.5;
+}
+
+.fig-eye-pupil {
+  fill: #18222b;
+}
+
+.fig-eye-glint {
+  fill: #fff;
+}
+
+.fig-arm {
+  fill: none;
+  stroke: #dba36b;
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.fig-arm-back {
+  transform-origin: 88px 96px;
+}
+
+.held-ball {
+  fill: #e22b39;
+  stroke: #a81b26;
+  stroke-width: 1;
+}
+
+.fig-bat-blade {
+  fill: #e0ab5f;
+  stroke: #8a5a26;
+  stroke-width: 2;
+}
+
+.fig-bat-handle {
+  fill: #1b2431;
+}
+
+/* Snail fielders */
+.snail-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.snail-shadow {
+  fill: rgba(0,0,0,.2);
+}
+
+.snail-body {
+  fill: #7da95b;
+  stroke: #41663a;
+  stroke-width: 2;
+}
+
+.snail-shell-outer {
+  fill: #c89155;
+  stroke: #80572f;
+  stroke-width: 2;
+}
+
+.snail-shell-spiral {
+  fill: none;
+  stroke: #80572f;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.snail-eye-stalk {
+  fill: none;
+  stroke: #557447;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.snail-eye-white {
+  fill: #fff;
+}
+
+.snail-eye-pupil {
+  fill: #1d252b;
+}
+
+/* Result bubbles */
+.run-bubbles {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 15%;
+  height: 35%;
+  z-index: 33;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.run-bubble {
+  position: absolute;
+  top: 30%;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #081018;
+  background: #ffc400;
+  font-size: 11px;
+  font-weight: 1000;
+  box-shadow: 0 5px 15px rgba(0,0,0,.25);
+  animation: runBubbleFloat .85s ease-out forwards;
+  animation-delay: calc(var(--i) * 35ms);
+}
+
+@keyframes runBubbleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(.45) rotate(-10deg);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-95px) scale(.85) rotate(10deg);
+  }
+}
+
+/* =========================================================
+   FRIEND'S ORIGINAL IMAGE-FRAME ANIMATION
+   Assets are loaded from /public:
+     /F_1.png ... /F_16.png
+     /Image 1.png ... /Image 11.png
+========================================================= */
+
+.friend-animation {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  overflow: visible;
+  line-height: 0;
+  z-index: 30;
+  transform: translateX(-50%);
+}
+
+.friend-animation-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  image-rendering: auto;
+}
+
+/* Bowling: frame sequence F_1 -> F_16 */
+.friend-bowling-animation {
+  bottom: -2%;
+  width: 190px;
+  height: 360px;
+  transform: translateX(-50%);
+  transform-origin: center bottom;
+  animation: friendBowlingMove 1.6s linear forwards;
+}
+
+@keyframes friendBowlingMove {
+  0% {
+    bottom: -16%;
+    transform: translateX(-50%) scale(1.12);
+    opacity: 1;
+  }
+
+  55% {
+    bottom: 8%;
+    transform: translateX(-50%) scale(.92);
+    opacity: 1;
+  }
+
+  100% {
+    bottom: 25%;
+    transform: translateX(-50%) scale(.70);
+    opacity: 1;
+  }
+}
+
+/* Batting: frame sequence Image 1 -> Image 11 */
+.friend-batting-animation {
+  bottom: 2%;
+  width: 215px;
+  height: 455px;
+  transform: translateX(-50%);
+  transform-origin: center bottom;
+  filter: drop-shadow(0 8px 8px rgba(0,0,0,.20));
+  animation: friendBattingAppear .12s ease-out both;
+}
+
+@keyframes friendBattingAppear {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+
+/* Mobile */
+@media (max-width: 800px) {
+  .pitch {
+    width: 42%;
+    min-width: 210px;
+    height: 70%;
+    top: 29%;
+  }
+
+  .friend-bowling-animation {
+    width: 155px;
+    height: 295px;
+  }
+
+  .friend-batting-animation {
+    width: 175px;
+    height: 365px;
+  }
+}
+
+@media (max-width: 520px) {
+  .pitch {
+    width: 52%;
+    min-width: 175px;
+    height: 68%;
+    top: 31%;
+  }
+
+  .friend-bowling-animation {
+    width: 125px;
+    height: 240px;
+  }
+
+  .friend-batting-animation {
+    width: 145px;
+    height: 305px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .friend-bowling-animation,
+  .friend-batting-animation {
+    animation: none;
+  }
+}
+
+
+/* =========================================================
+   ANSWER -> RESULT ANIMATION FLOW
+   Correct answer: question overlay closes visually so the
+   batting animation can be seen clearly in the game scene.
+   Wicket / timeout keeps the result overlay visible.
+========================================================= */
+
+/* When batting animation is mounted, remove the dark question
+   overlay effect so the animation and pitch are fully visible. */
+.game-scene:has(.friend-batting-animation) ~ .question-overlay {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* If the question overlay is rendered inside the game wrapper,
+   keep it visually transparent while batting animation is active. */
+.question-overlay:has(.answer-result.six),
+.question-overlay:has(.answer-result.four),
+.question-overlay:has(.answer-result.two) {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* Hide the question card itself during a successful shot.
+   The React result state/animation remains untouched. */
+.question-overlay:has(.answer-result.six) .question-card,
+.question-overlay:has(.answer-result.four) .question-card,
+.question-overlay:has(.answer-result.two) .question-card {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Keep wicket result visible — no batting animation. */
+.question-overlay:has(.answer-result.wicket) .question-card {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Successful batting animation stays clearly above the pitch. */
+.friend-batting-animation {
+  z-index: 80;
+}
+
+
+/* BATTER MODE: show the batting pitch/background together with batting frames */
+.game-scene:has(.friend-batting-animation) {
+  background:
+    linear-gradient(rgba(0,0,0,.01), rgba(0,0,0,.05)),
+    url("/1789916749664.png") center center / cover no-repeat !important;
+}
+
+.game-scene:has(.friend-batting-animation) > .friend-pitch-background {
+  background:
+    linear-gradient(rgba(0,0,0,.01), rgba(0,0,0,.05)),
+    url("/1789916749664.png") center center / cover no-repeat !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+.game-scene:has(.friend-batting-animation) .friend-animation {
+  z-index: 80;
+}
+
+.game-scene:has(.friend-batting-animation) .friend-batting-animation {
+  z-index: 81;
+}
+
+/* CORRECT SHOT: close the question content but keep NEXT BALL visible immediately after animation */
+.question-overlay:has(.answer-result.six) .question-card,
+.question-overlay:has(.answer-result.four) .question-card,
+.question-overlay:has(.answer-result.two) .question-card {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: none;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.question-overlay:has(.answer-result.six) .question-card > *:not(.next-ball),
+.question-overlay:has(.answer-result.four) .question-card > *:not(.next-ball),
+.question-overlay:has(.answer-result.two) .question-card > *:not(.next-ball) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.question-overlay:has(.answer-result.six) .next-ball,
+.question-overlay:has(.answer-result.four) .next-ball,
+.question-overlay:has(.answer-result.two) .next-ball {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  margin: 0 auto;
+  position: relative;
+  z-index: 200;
+}
+
+
+/* =========================================================
+   FINAL GAMEPLAY LAYOUT FIX
+   - Delivery selection becomes a left vertical sidebar
+   - Over / ball tracker becomes a left vertical sidebar
+   - Main cricket gameplay gets the center stage
+   - Wicket result no longer leaves the large question popup
+   - Responsive fallback keeps mobile usable
+========================================================= */
+
+/* Give the game scene a clean, predictable layout */
+.game-wrapper {
+  width: min(1440px, 100vw);
+  margin: 12px auto 0;
+  padding: 0 14px 28px;
+  position: relative;
+}
+
+.game-scene {
+  width: 100%;
+  height: min(700px, calc(100vh - 205px));
+  min-height: 560px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.13);
+  box-shadow:
+    0 25px 70px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(255,255,255,.025);
+}
+
+/* Left delivery sidebar */
+.delivery-panel {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;
+
+  width: 118px;
+  padding: 10px 8px;
+
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4,17,29,.97),
+      rgba(2,10,18,.96)
+    );
+
+  box-shadow:
+    0 14px 40px rgba(0,0,0,.48),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.delivery-title {
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.delivery-title small {
+  display: block;
+  color: #ffc400;
+  font-size: 6px;
+  font-weight: 1000;
+  line-height: 1.2;
+  letter-spacing: 1px;
+}
+
+.delivery-title b {
+  display: block;
+  margin-top: 3px;
+  color: #fff;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1;
+}
+
+.delivery-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.delivery-grid button {
+  width: 100%;
+  min-height: 52px;
+  padding: 5px 4px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 8px;
+
+  color: #fff;
+  background: rgba(255,255,255,.035);
+
+  cursor: pointer;
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background .16s ease,
+    box-shadow .16s ease;
+}
+
+.delivery-grid button:hover {
+  transform: translateX(2px);
+  border-color: #ffc400;
+  background: rgba(255,196,0,.09);
+  box-shadow: 0 0 14px rgba(255,196,0,.08);
+}
+
+.delivery-grid button:active {
+  transform: translateX(1px) scale(.98);
+}
+
+.delivery-grid button span {
+  display: block;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.delivery-grid button strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 7px;
+  line-height: 1;
+}
+
+.delivery-grid button small {
+  display: block;
+  max-width: 100%;
+  margin-top: 3px;
+  overflow: hidden;
+
+  color: #687580;
+  font-size: 5.5px;
+  line-height: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Left vertical over / ball tracker */
+.over-tracker {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  transform: none;
+  z-index: 91;
+
+  width: 118px;
+  min-height: 160px;
+  height: auto;
+  padding: 10px 8px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4,17,29,.97),
+      rgba(2,10,18,.96)
+    );
+
+  box-shadow:
+    0 14px 40px rgba(0,0,0,.48),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.over-tracker > div:first-child {
+  width: 100%;
+  padding-bottom: 7px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.over-tracker small {
+  display: block;
+  color: #6d7780;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.over-tracker b {
+  display: block;
+  margin-top: 3px;
+  color: #ffc400;
+  font-size: 10px;
+  font-style: italic;
+}
+
+.over-balls {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.over-balls i {
+  width: 100%;
+  height: 28px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 7px;
+
+  color: #69747f;
+  background: #0b1825;
+
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.over-balls i.done {
+  color: #05131d;
+  background: #ffc400;
+  border-color: #ffc400;
+}
+
+.over-balls i.current {
+  color: #fff;
+  border-color: #4de49b;
+  background: rgba(77,228,155,.08);
+  box-shadow: 0 0 10px rgba(77,228,155,.25);
+}
+
+/* Status stays small and out of the gameplay center */
+.bottom-status {
+  position: absolute;
+  right: 16px;
+  left: auto;
+  top: auto;
+  bottom: 16px;
+  transform: none;
+  z-index: 45;
+
+  padding: 6px 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+
+  color: #d8d8d8;
+  background: rgba(0,0,0,.48);
+
+  font-size: 7px;
+  font-weight: 950;
+  letter-spacing: 1px;
+}
+
+/* Keep the central animation clear of side controls */
+.friend-animation {
+  pointer-events: none;
+}
+
+.friend-bowling-animation,
+.friend-batting-animation {
+  pointer-events: none;
+}
+
+/* =========================================================
+   WICKET RESULT
+   Hide the large question content after wicket.
+   Keep only the result + NEXT BALL control.
+========================================================= */
+
+.question-overlay:has(.answer-result.wicket) {
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+}
+
+.question-overlay:has(.answer-result.wicket) .question-card {
+  width: auto;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
+
+  pointer-events: none;
+}
+
+/* Hide question, timer, answers and metadata after wicket */
+.question-overlay:has(.answer-result.wicket) .question-card > *:not(.answer-result):not(.next-ball) {
+  display: none;
+}
+
+/* Make wicket result prominent */
+.question-overlay:has(.answer-result.wicket) .answer-result {
+  margin: 0 0 14px;
+  min-width: 210px;
+  padding: 13px 24px;
+  pointer-events: none;
+  box-shadow: 0 12px 35px rgba(0,0,0,.35);
+}
+
+/* Next ball remains clickable */
+.question-overlay:has(.answer-result.wicket) .next-ball {
+  position: relative;
+  z-index: 200;
+  margin: 0 auto;
+
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Correct-result overlay also becomes a clean animation stage */
+.question-overlay:has(.answer-result.six),
+.question-overlay:has(.answer-result.four),
+.question-overlay:has(.answer-result.two) {
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+}
+
+/* =========================================================
+   Desktop sizing
+========================================================= */
+
+@media (min-width: 1101px) {
+  .game-scene {
+    min-height: 600px;
+  }
+
+  .game-wrapper {
+    padding-left: 150px;
+    padding-right: 14px;
+  }
+
+  .delivery-panel {
+    left: 14px;
+  }
+
+  .over-tracker {
+    left: 14px;
+  }
+
+  .game-hud {
+    top: 10px;
+  }
+}
+
+/* =========================================================
+   Tablet
+========================================================= */
+
+@media (max-width: 1100px) and (min-width: 801px) {
+  .game-wrapper {
+    padding-left: 135px;
+  }
+
+  .delivery-panel,
+  .over-tracker {
+    left: 8px;
+    width: 112px;
+  }
+
+  .game-scene {
+    min-height: 540px;
+    height: calc(100vh - 215px);
+  }
+}
+
+/* =========================================================
+   Mobile
+   Sidebars become compact horizontal controls so nothing
+   gets pushed outside the viewport.
+========================================================= */
+
+@media (max-width: 800px) {
+  .game-wrapper {
+    width: 100%;
+    padding: 0 5px 12px;
+  }
+
+  .game-scene {
+    min-height: 500px;
+    height: calc(100vh - 210px);
+    border-radius: 10px;
+  }
+
+  .delivery-panel {
+    left: 50%;
+    top: 66px;
+    transform: translateX(-50%);
+
+    width: calc(100% - 20px);
+    padding: 8px;
+  }
+
+  .delivery-title {
+    margin-bottom: 6px;
+  }
+
+  .delivery-title small {
+    font-size: 6px;
+  }
+
+  .delivery-title b {
+    font-size: 13px;
+  }
+
+  .delivery-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+  }
+
+  .delivery-grid button {
+    min-height: 52px;
+  }
+
+  .delivery-grid button span {
+    font-size: 16px;
+  }
+
+  .over-tracker {
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%);
+
+    width: min(420px, calc(100% - 20px));
+    min-height: 42px;
+    padding: 5px 8px;
+
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .over-tracker > div:first-child {
+    width: auto;
+    min-width: 64px;
+    padding: 0;
+    border-bottom: 0;
+    border-right: 1px solid rgba(255,255,255,.07);
+    padding-right: 8px;
+  }
+
+  .over-balls {
+    width: auto;
+    flex: 1;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .over-balls i {
+    height: 27px;
+  }
+
+  .bottom-status {
+    right: 8px;
+    bottom: 58px;
+  }
+
+  .question-card {
+    width: min(94vw, 850px);
+  }
+
+  .answers {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   Small mobile
+========================================================= */
+
+@media (max-width: 520px) {
+  .game-topbar {
+    padding: 0 9px;
+  }
+
+  .game-logo span {
+    display: none;
+  }
+
+  .game-logo strong {
+    font-size: 12px;
+  }
+
+  .scoreboard {
+    width: calc(100% - 10px);
+    min-height: 66px;
+    padding: 7px 9px;
+  }
+
+  .team-badge {
+    width: 34px;
+    height: 34px;
+  }
+
+  .score-center strong {
+    font-size: 24px;
+  }
+
+  .score-over b {
+    font-size: 19px;
+  }
+
+  .game-scene {
+    min-height: 455px;
+  }
+
+  .delivery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .delivery-grid button {
+    min-height: 48px;
+  }
+
+  .delivery-grid button small {
+    display: none;
+  }
+
+  .over-tracker {
+    width: calc(100% - 16px);
+  }
+
+  .over-tracker small {
+    font-size: 5.5px;
+  }
+
+  .over-tracker b {
+    font-size: 8px;
+  }
+
+  .over-balls {
+    gap: 3px;
+  }
+
+  .over-balls i {
+    height: 24px;
+    border-radius: 6px;
+  }
+
+  .bottom-status {
+    display: none;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .delivery-grid button,
+  .over-balls i,
+  .next-ball {
+    transition: none;
+  }
+}
+
+
+/* =========================================================
+   FINAL FIX — NEXT BALL BUTTON + RUN RULES
+   Keep NEXT BALL at the bottom-center instead of the
+   middle of the gameplay area.
+========================================================= */
+
+/* Normal next-ball button */
+.next-ball {
+  position: relative;
+  z-index: 300;
+  margin: 18px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Wicket: keep the result in the scene, but put NEXT BALL
+   at a fixed bottom-center position so it never appears
+   in the middle of the screen. */
+.question-overlay:has(.answer-result.wicket) .next-ball {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  margin: 0;
+  min-width: 190px;
+  min-height: 46px;
+  padding: 12px 22px;
+  z-index: 9999;
+}
+
+.question-overlay:has(.answer-result.wicket) .next-ball:hover {
+  transform: translateX(-50%) translateY(-1px);
+}
+
+/* Make the wicket result stay centered without affecting
+   the position of NEXT BALL. */
+.question-overlay:has(.answer-result.wicket) .question-card {
+  justify-content: center;
+  align-items: center;
+}
+
+/* Run rules at the bottom — bigger + clearly bold */
+.run-rule {
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: .15px;
+  color: #8b949e;
+  gap: 24px;
+  padding: 8px 12px 12px;
+}
+
+.run-rule span {
+  font-size: 11px;
+  font-weight: 1000;
+}
+
+.run-rule span:first-child {
+  color: #ffc400;
+  font-weight: 1000;
+}
+
+.run-rule svg {
+  margin-right: 5px;
+  width: 13px;
+  height: 13px;
+}
+
+/* Mobile */
+@media (max-width: 800px) {
+  .question-overlay:has(.answer-result.wicket) .next-ball {
+    bottom: 20px;
+    min-width: 180px;
+  }
+
+  .run-rule {
+    font-size: 10px;
+    font-weight: 1000;
+    gap: 10px 18px;
+    padding: 7px 10px 11px;
+  }
+
+  .run-rule span {
+    font-size: 10px;
+    font-weight: 1000;
+  }
+}
+
+@media (max-width: 520px) {
+  .question-overlay:has(.answer-result.wicket) .next-ball {
+    bottom: 14px;
+    min-width: 165px;
+    padding: 10px 16px;
+  }
+
+  .run-rule {
+    font-size: 9px;
+    gap: 7px 12px;
+  }
+
+  .run-rule span {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+   FINAL STRUCTURE FIX
+   NEXT BALL must NEVER sit on the pitch/players.
+   Keep it in a dedicated bottom-center action area.
+========================================================= */
+
+/* Result screen action button */
+.question-overlay .next-ball {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 62px !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+
+  width: 190px;
+  min-width: 190px;
+  height: 46px;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999;
+}
+
+/* Keep hover animation centered */
+.question-overlay .next-ball:hover {
+  transform: translateX(-50%) translateY(-2px) !important;
+}
+
+/* Wicket uses exactly the same action position */
+.question-overlay:has(.answer-result.wicket) .next-ball {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 62px !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+}
+
+/* Result card stays above the field centre */
+.question-overlay .answer-result {
+  position: relative;
+  z-index: 500;
+}
+
+/* The rules are a separate bottom information strip */
+.run-rule {
+  position: fixed;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+
+  width: max-content;
+  max-width: calc(100vw - 280px);
+
+  z-index: 10000;
+
+  font-size: 13px !important;
+  line-height: 1.3;
+  font-weight: 900 !important;
+  letter-spacing: .35px;
+
+  white-space: nowrap;
+}
+
+.run-rule span {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+/* Keep left over tracker away from the rules */
+.over-tracker {
+  bottom: 78px !important;
+}
+
+/* Desktop */
+@media (min-width: 1101px) {
+  .question-overlay .next-ball,
+  .question-overlay:has(.answer-result.wicket) .next-ball {
+    bottom: 58px !important;
+  }
+
+  .run-rule {
+    bottom: 10px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 1100px) {
+  .question-overlay .next-ball,
+  .question-overlay:has(.answer-result.wicket) .next-ball {
+    bottom: 58px !important;
+  }
+
+  .run-rule {
+    max-width: calc(100vw - 220px);
+    font-size: 11px !important;
+  }
+
+  .run-rule span {
+    font-size: 11px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 800px) {
+  .question-overlay .next-ball,
+  .question-overlay:has(.answer-result.wicket) .next-ball {
+    bottom: 58px !important;
+    width: 170px;
+    min-width: 170px;
+    height: 42px;
+    min-height: 42px;
+  }
+
+  .run-rule {
+    bottom: 8px;
+    width: 100%;
+    max-width: calc(100vw - 20px);
+    white-space: normal;
+    justify-content: center;
+    text-align: center;
+    font-size: 10px !important;
+  }
+
+  .run-rule span {
+    font-size: 10px !important;
+  }
+
+  .over-tracker {
+    bottom: 58px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .question-overlay .next-ball,
+  .question-overlay:has(.answer-result.wicket) .next-ball {
+    bottom: 54px !important;
+    width: 155px;
+    min-width: 155px;
+  }
+
+  .run-rule {
+    font-size: 9px !important;
+    gap: 6px 10px;
+  }
+
+  .run-rule span {
+    font-size: 9px !important;
+  }
+}
+
+
+/* ============================================================
+   CRICKET QUIZ ARENA — PREMIUM GAME UI V4
+   Purpose:
+   • Clean professional cricket dashboard
+   • Result stays inside the field without covering players
+   • NEXT BALL gets its own bottom action zone
+   • Rules stay in a separate information strip
+   • Preserve existing React/game logic
+============================================================ */
+
+/* ---------- PAGE FOUNDATION ---------- */
+.game-topbar {
+  height: 54px;
+  padding: 0 18px;
+  background:
+    linear-gradient(180deg, rgba(8,17,28,.98), rgba(3,10,18,.98));
+  border-bottom: 1px solid rgba(255,196,0,.10);
+}
+
+.game-logo {
+  gap: 6px;
+  letter-spacing: .5px;
+}
+
+.game-logo span {
+  font-size: 11px;
+  color: #8995a3;
+  letter-spacing: 1px;
+}
+
+.game-logo strong {
+  font-size: 15px;
+  color: #ffc400;
+  letter-spacing: .8px;
+}
+
+.live-pill {
+  font-size: 9px;
+  font-weight: 1000;
+  letter-spacing: .5px;
+}
+
+.exit-button {
+  height: 32px;
+  width: 92px;
+  border-radius: 7px;
+  background: rgba(255,255,255,.035);
+  transition: .2s ease;
+}
+
+/* ---------- SCOREBOARD ---------- */
+.scoreboard {
+  width: min(1080px, calc(100vw - 40px));
+  min-height: 82px;
+  margin: 12px auto 13px;
+  padding: 11px 20px;
+
+  grid-template-columns: 1fr 1.15fr 1fr;
+
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+
+  background:
+    linear-gradient(135deg,
+      rgba(8,24,39,.98),
+      rgba(3,13,24,.96));
+
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.score-team {
+  gap: 11px;
+}
+
+.team-badge {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-color: rgba(255,196,0,.30);
+  background: rgba(255,196,0,.055);
+}
+
+.score-team small,
+.score-over small {
+  font-size: 7px;
+  letter-spacing: 1.2px;
+  color: #718091;
+}
+
+.score-team b {
+  font-size: 13px;
+  letter-spacing: .4px;
+}
+
+.score-center {
+  text-align: center;
+  position: relative;
+}
+
+.score-center strong {
+  font-size: 30px;
+  line-height: 1;
+  color: #fff;
+  font-weight: 1000;
+}
+
+.score-center em {
+  font-size: 15px;
+  color: #667585;
+  font-style: normal;
+  margin-left: 2px;
+}
+
+.score-center span {
+  display: block;
+  margin-top: 4px;
+  font-size: 7px;
+  color: #6e7d8c;
+  letter-spacing: 1px;
+  font-weight: 900;
+}
+
+.score-over {
+  text-align: right;
+}
+
+.score-over b {
+  font-size: 21px;
+  color: #ffc400;
+  line-height: 1;
+}
+
+.score-over span {
+  display: block;
+  margin-top: 4px;
+  font-size: 7px;
+  color: #728091;
+  font-weight: 900;
+}
+
+/* ---------- MAIN GAME STAGE ---------- */
+.game-wrapper {
+  width: min(1420px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 0 0 8px;
+}
+
+.game-scene {
+  height: min(650px, calc(100vh - 205px));
+  min-height: 520px;
+
+  border-radius: 18px;
+  border: 1px solid rgba(255,196,0,.20);
+
+  box-shadow:
+    0 24px 70px rgba(0,0,0,.48),
+    0 0 0 1px rgba(255,255,255,.025);
+
+  background-position: center center;
+}
+
+/* subtle professional vignette */
+.game-scene::after {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.02) 0%,
+      rgba(0,0,0,0) 42%,
+      rgba(0,0,0,.14) 100%
+    );
+  pointer-events: none;
+}
+
+/* ---------- BOWLER / DELIVERY HUD ---------- */
+.game-hud {
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 150px;
+  padding: 7px 15px;
+
+  border: 1px solid rgba(255,196,0,.45);
+  border-radius: 7px;
+
+  background: rgba(5,16,27,.84);
+  backdrop-filter: blur(7px);
+
+  box-shadow: 0 7px 20px rgba(0,0,0,.24);
+}
+
+.game-hud span {
+  font-size: 7px;
+  color: #aeb8c2;
+}
+
+.game-hud b {
+  font-size: 10px;
+  color: #ffc400;
+}
+
+/* ---------- DELIVERY CHOICES ---------- */
+.delivery-panel {
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 126px;
+  padding: 10px;
+
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 13px;
+
+  background:
+    linear-gradient(160deg,
+      rgba(5,17,29,.95),
+      rgba(2,10,18,.92));
+
+  box-shadow: 0 16px 35px rgba(0,0,0,.30);
+  backdrop-filter: blur(9px);
+}
+
+.delivery-title {
+  margin-bottom: 9px;
+  text-align: center;
+}
+
+.delivery-title small {
+  font-size: 6px;
+  color: #738090;
+  letter-spacing: 1px;
+}
+
+.delivery-title b {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: #ffc400;
+}
+
+.delivery-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.delivery-grid button {
+  min-height: 52px;
+  border-radius: 9px;
+  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(255,255,255,.035);
+  color: #d9e0e6;
+  transition: transform .16s ease, border-color .16s ease,
+              background .16s ease, box-shadow .16s ease;
+}
+
+.delivery-grid button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,196,0,.55);
+  background: rgba(255,196,0,.08);
+  box-shadow: 0 7px 16px rgba(0,0,0,.25);
+}
+
+.delivery-grid button span {
+  font-size: 15px;
+  font-weight: 1000;
+  color: #fff;
+}
+
+.delivery-grid button strong {
+  color: #ffc400;
+}
+
+.delivery-grid button small {
+  font-size: 6px;
+  color: #788695;
+}
+
+/* ---------- LEFT OVER TRACKER ---------- */
+.over-tracker {
+  left: 16px;
+  bottom: 16px;
+
+  width: 126px;
+  min-height: 118px;
+  padding: 10px;
+
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 13px;
+
+  background: rgba(4,15,26,.92);
+  box-shadow: 0 14px 32px rgba(0,0,0,.30);
+  backdrop-filter: blur(8px);
+}
+
+.over-tracker small {
+  font-size: 6px;
+  color: #72808e;
+  letter-spacing: 1px;
+}
+
+.over-tracker b {
+  font-size: 10px;
+  color: #ffc400;
+}
+
+.over-balls {
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.over-balls i {
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.035);
+}
+
+.over-balls i.current {
+  border-color: #ffc400;
+  background: rgba(255,196,0,.12);
+  box-shadow: 0 0 12px rgba(255,196,0,.12);
+}
+
+/* ---------- RESULT OVERLAY: TRANSPARENT HUD ---------- */
+.question-overlay:has(.answer-result.six),
+.question-overlay:has(.answer-result.four),
+.question-overlay:has(.answer-result.two),
+.question-overlay:has(.answer-result.wicket) {
+  position: absolute;
+  inset: 0;
+
+  display: block;
+  padding: 0;
+
+  background: transparent;
+  backdrop-filter: none;
+
+  pointer-events: none;
+  z-index: 500;
+}
+
+/* Make result card a transparent stage layer */
+.question-overlay:has(.answer-result.six) .question-card,
+.question-overlay:has(.answer-result.four) .question-card,
+.question-overlay:has(.answer-result.two) .question-card,
+.question-overlay:has(.answer-result.wicket) .question-card {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  max-width: none;
+  max-height: none;
+
+  padding: 0;
+
+  display: block;
+  overflow: visible;
+
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+
+  pointer-events: none;
+}
+
+/* Hide everything except result and next action */
+.question-overlay:has(.answer-result.six) .question-card > *:not(.answer-result):not(.next-ball),
+.question-overlay:has(.answer-result.four) .question-card > *:not(.answer-result):not(.next-ball),
+.question-overlay:has(.answer-result.two) .question-card > *:not(.answer-result):not(.next-ball),
+.question-overlay:has(.answer-result.wicket) .question-card > *:not(.answer-result):not(.next-ball) {
+  display: none;
+}
+
+/* ---------- RESULT BANNER ---------- */
+.question-overlay .answer-result {
+  position: absolute;
+
+  top: 86px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(430px, calc(100% - 300px));
+  min-height: 94px;
+
+  padding: 14px 24px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(9,28,45,.94),
+      rgba(5,15,27,.94)
+    );
+
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.05);
+
+  backdrop-filter: blur(9px);
+
+  text-align: center;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.answer-result strong {
+  font-size: 39px;
+  line-height: 1;
+  font-weight: 1000;
+  letter-spacing: 1px;
+}
+
+.answer-result small {
+  margin-top: 6px;
+  font-size: 10px;
+  color: #d3dbe2;
+  font-weight: 800;
+}
+
+/* Result-specific accents */
+.answer-result.six strong,
+.answer-result.four strong,
+.answer-result.two strong {
+  color: #ffc400;
+}
+
+.answer-result.wicket strong {
+  color: #ff5d68;
+}
+
+/* ---------- NEXT BALL: DEDICATED ACTION DOCK ---------- */
+.question-overlay .next-ball,
+.question-overlay:has(.answer-result.wicket) .next-ball {
+  position: absolute !important;
+
+  left: 50% !important;
+  bottom: 26px !important;
+
+  transform: translateX(-50%) !important;
+
+  width: 188px;
+  min-width: 188px;
+  height: 46px;
+  min-height: 46px;
+
+  margin: 0 !important;
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background:
+    linear-gradient(180deg, #ffd02a, #f4b800);
+
+  color: #07111b;
+
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: .7px;
+
+  box-shadow:
+    0 9px 24px rgba(0,0,0,.30),
+    0 0 0 1px rgba(255,255,255,.12);
+
+  pointer-events: auto;
+  z-index: 50;
+
+  transition: transform .16s ease, filter .16s ease,
+              box-shadow .16s ease;
+}
+
+.question-overlay .next-ball:hover {
+  transform: translateX(-50%) translateY(-2px) !important;
+  filter: brightness(1.06);
+  box-shadow:
+    0 13px 30px rgba(0,0,0,.34),
+    0 0 0 1px rgba(255,255,255,.16);
+}
+
+.question-overlay .next-ball:disabled {
+  opacity: .62;
+}
+
+/* ---------- RULE BAR ---------- */
+.run-rule {
+  min-height: 42px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+
+  padding: 7px 16px 10px;
+
+  color: #93a0ad;
+
+  font-size: 11px !important;
+  font-weight: 1000 !important;
+  letter-spacing: .35px;
+
+  white-space: nowrap;
+}
+
+.run-rule span {
+  font-size: 11px !important;
+  font-weight: 1000 !important;
+}
+
+.run-rule span:first-child {
+  color: #ffc400;
+}
+
+/* ---------- STATUS FOOTER ---------- */
+.bottom-status {
+  font-size: 7px;
+  color: #697887;
+  letter-spacing: 1px;
+  font-weight: 900;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 1100px) {
+  .game-wrapper {
+    width: calc(100vw - 20px);
+  }
+
+  .delivery-panel {
+    left: 10px;
+    width: 112px;
+  }
+
+  .over-tracker {
+    left: 10px;
+    width: 112px;
+  }
+
+  .answer-result {
+    width: min(400px, calc(100% - 250px)) !important;
+  }
+
+  .run-rule {
+    gap: 18px;
+    font-size: 10px !important;
+  }
+
+  .run-rule span {
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 800px) {
+  .game-topbar {
+    height: 48px;
+    padding: 0 10px;
+  }
+
+  .scoreboard {
+    width: calc(100vw - 20px);
+    min-height: 72px;
+    padding: 8px 11px;
+    margin-top: 9px;
+  }
+
+  .score-center strong {
+    font-size: 25px;
+  }
+
+  .team-badge {
+    width: 37px;
+    height: 37px;
+    flex-basis: 37px;
+  }
+
+  .game-wrapper {
+    width: calc(100vw - 12px);
+  }
+
+  .game-scene {
+    min-height: 500px;
+    height: calc(100vh - 190px);
+    border-radius: 13px;
+  }
+
+  .delivery-panel {
+    left: 50%;
+    top: 14px;
+    transform: translateX(-50%);
+
+    width: calc(100% - 28px);
+    padding: 7px;
+
+    z-index: 40;
+  }
+
+  .delivery-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+  }
+
+  .delivery-grid button {
+    min-height: 42px;
+  }
+
+  .delivery-grid button small {
+    display: none;
+  }
+
+  .over-tracker {
+    left: 10px;
+    bottom: 10px;
+    width: 110px;
+    min-height: 78px;
+    padding: 7px;
+  }
+
+  .question-overlay .answer-result {
+    top: 92px;
+    width: min(370px, calc(100% - 32px)) !important;
+    min-height: 84px;
+  }
+
+  .answer-result strong {
+    font-size: 32px;
+  }
+
+  .question-overlay .next-ball,
+  .question-overlay:has(.answer-result.wicket) .next-ball {
+    bottom: 20px !important;
+    width: 172px;
+    min-width: 172px;
+    height: 42px;
+    min-height: 42px;
+  }
+
+  .run-rule {
+    min-height: 48px;
+    padding: 6px 8px 9px;
+    gap: 8px 15px;
+    flex-wrap: wrap;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .game-logo span {
+    display: none;
+  }
+
+  .game-logo strong {
+    font-size: 12px;
+  }
+
+  .scoreboard {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .score-team b {
+    font-size: 10px;
+  }
+
+  .score-team small,
+  .score-over small {
+    font-size: 6px;
+  }
+
+  .score-center strong {
+    font-size: 22px;
+  }
+
+  .game-scene {
+    min-height: 470px;
+  }
+
+  .delivery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .delivery-grid button {
+    min-height: 40px;
+  }
+
+  .over-tracker {
+    width: 98px;
+  }
+
+  .question-overlay .answer-result {
+    top: 82px;
+    min-height: 76px;
+    padding: 10px 14px;
+  }
+
+  .answer-result strong {
+    font-size: 28px;
+  }
+
+  .answer-result small {
+    font-size: 8px;
+  }
+
+  .question-overlay .next-ball,
+  .question-overlay:has(.answer-result.wicket) .next-ball {
+    bottom: 16px !important;
+    width: 158px;
+    min-width: 158px;
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .run-rule {
+    font-size: 9px !important;
+    gap: 6px 10px;
+  }
+
+  .run-rule span {
+    font-size: 9px !important;
+  }
+}
+.team-badge {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #102334;
+  border: 1px solid #c9a227;
+  color: #ffc400;
+  font-size: 12px;
+  font-weight: 900;
+}
+/* AI live commentary */
+.ai-commentary {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  border-radius: 14px;
+  background: rgba(201, 162, 39, 0.08);
+  color: inherit;
+}
+
+.ai-commentary-heading {
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #c9a227;
+}
+
+.ai-commentary p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}

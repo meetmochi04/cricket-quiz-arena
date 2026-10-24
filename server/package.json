@@ -1,0 +1,10 @@
+{
+  "name": "cricket-quiz-ai-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+  "dev": "concurrently -k -n BACKEND,FRONTEND \"npm run dev:server\" \"npm run dev:client\"",
+  "dev:server": "node server/index.js",
+  "dev:client": "vite"
+}
+}

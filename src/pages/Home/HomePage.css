@@ -1,0 +1,469 @@
+/* =========================================
+   TEACHER WELCOME CARD
+========================================= */
+
+.teacher-welcome-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: fit-content;
+  min-width: 280px;
+  max-width: 100%;
+
+  margin-top: 28px;
+  padding: 14px 22px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+
+  background: rgba(5, 18, 38, 0.72);
+  backdrop-filter: blur(10px);
+
+  box-sizing: border-box;
+}
+
+.teacher-avatar {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    #1677ff,
+    #0054d9
+  );
+
+  color: white;
+  font-size: 20px;
+
+  box-shadow:
+    0 5px 18px rgba(0, 100, 255, 0.35);
+}
+
+.teacher-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.teacher-info span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+
+  color: #9caac0;
+
+  margin-bottom: 3px;
+}
+
+.teacher-info h2 {
+  margin: 0;
+
+  font-size: 24px;
+  line-height: 1.2;
+
+  font-weight: 800;
+
+  color: #ffffff;
+
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.teacher-info small {
+  margin-top: 4px;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+
+  color: #ffc400;
+}
+
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  margin-top: 24px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .teacher-welcome-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .teacher-info h2 {
+    font-size: 21px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+}
+
+/* =========================================
+   TERMS & CONDITIONS
+   ========================================= */
+
+.terms-link {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 6px 10px;
+  border: 0;
+  background: transparent;
+  color: #c8d7ed;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.terms-link:hover,
+.terms-link:focus-visible {
+  color: #ffc400;
+}
+
+.terms-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(2, 8, 20, 0.82);
+  backdrop-filter: blur(8px);
+  box-sizing: border-box;
+}
+
+.terms-modal {
+  width: min(680px, 100%);
+  max-height: min(82vh, 760px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 196, 0, 0.42);
+  border-radius: 16px;
+  background: #07172d;
+  color: #eef4ff;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.48);
+  box-sizing: border-box;
+}
+
+.terms-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.terms-eyebrow {
+  color: #ffc400;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+}
+
+.terms-modal-header h2 {
+  margin: 6px 0 0;
+  color: #fff;
+  font-size: clamp(20px, 4vw, 27px);
+  font-weight: 800;
+}
+
+.terms-close-button {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.terms-close-button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.terms-modal-content {
+  padding: 18px 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.terms-modal-content p {
+  margin: 0 0 14px;
+  color: #c8d5e8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.terms-modal-content h3 {
+  margin: 18px 0 7px;
+  color: #ffc400;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.terms-modal-content h3:first-of-type {
+  margin-top: 8px;
+}
+
+.terms-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 24px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.terms-modal-actions button {
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffc400, #e6a900);
+  color: #07172d;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.7px;
+  cursor: pointer;
+}
+
+.terms-modal-actions button:hover {
+  filter: brightness(1.08);
+}
+
+@media (max-width: 600px) {
+  .terms-modal-overlay {
+    padding: 12px;
+  }
+
+  .terms-modal {
+    max-height: 88vh;
+    border-radius: 12px;
+  }
+
+  .terms-modal-header {
+    padding: 18px 18px 14px;
+  }
+
+  .terms-modal-content {
+    padding: 14px 18px;
+  }
+
+  .terms-modal-actions {
+    padding: 12px 18px 16px;
+  }
+}
+
+
+/* Side-by-side footer links for legal terms and gameplay rules */
+.terms-links-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.terms-link-separator {
+  margin-top: 14px;
+  color: rgba(200, 215, 237, 0.55);
+  font-size: 12px;
+}
+
+.game-rules-list {
+  margin: 0 0 14px;
+  padding-left: 22px;
+  color: #c8d5e8;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.game-rules-list strong {
+  color: #ffffff;
+}
+
+
+/* =========================================
+   MATCH HISTORY BUTTON
+========================================= */
+.match-history-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 1px solid rgba(255, 196, 0, 0.65);
+  border-radius: 10px;
+  color: #ffc400;
+  background: rgba(5, 18, 38, 0.82);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.match-history-button:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 196, 0, 0.12);
+  box-shadow: 0 8px 24px rgba(255, 196, 0, 0.12);
+}
+
+.match-history-button .button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.match-history-button:focus-visible {
+  outline: 2px solid #ffc400;
+  outline-offset: 3px;
+}
+
+
+/* =========================================
+   ACTION BUTTON WIDTH / RESPONSIVE FIX
+========================================= */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 18px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.action-buttons > button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.action-buttons > button .button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.action-buttons > button .button-text {
+  display: inline-block;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.create-match-button,
+.quit-button {
+  min-height: 68px;
+  padding: 16px 22px;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  box-shadow: 0 7px 0 rgba(0, 0, 0, 0.22);
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.create-match-button {
+  background: linear-gradient(180deg, #1685ff 0%, #0758d8 100%);
+}
+
+.quit-button {
+  background: linear-gradient(180deg, #ff3434 0%, #e50919 100%);
+}
+
+.create-match-button:hover,
+.quit-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.match-history-button {
+  min-height: 58px;
+  padding: 14px 18px;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 700px) {
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .action-buttons > button {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .create-match-button,
+  .quit-button {
+    min-height: 56px;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .match-history-button {
+    min-height: 52px;
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+}

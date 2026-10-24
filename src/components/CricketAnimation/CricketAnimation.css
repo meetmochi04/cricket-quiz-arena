@@ -1,0 +1,132 @@
+/* CricketAnimation — scoped styles (all class names prefixed with ca-) */
+
+.ca-root {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1000 / 560;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #2b7a33;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  user-select: none;
+  -webkit-user-select: none;
+  isolation: isolate;
+}
+
+@media (max-width: 600px) {
+  .ca-root {
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+  }
+}
+
+.ca-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- camera shake on impact ---- */
+.ca-shake .ca-svg {
+  animation: ca-shake 0.22s ease-in-out;
+}
+
+@keyframes ca-shake {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-4px, 3px); }
+  40% { transform: translate(4px, -3px); }
+  60% { transform: translate(-3px, 2px); }
+  80% { transform: translate(2px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ---- question hold (time freeze) ---- */
+.ca-dim {
+  fill: rgba(5, 20, 40, 0.22);
+  pointer-events: none;
+}
+
+.ca-freeze-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ca-pulse 1.1s ease-out infinite;
+}
+
+@keyframes ca-pulse {
+  0% { transform: scale(0.6); opacity: 0.95; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ---- cosmetic loops ---- */
+.ca-cloud--a { animation: ca-drift 38s linear infinite; }
+.ca-cloud--b { animation: ca-drift 52s linear infinite reverse; }
+
+@keyframes ca-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(120px); }
+}
+
+/* ---- result banner ---- */
+.ca-banner {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  padding: 0.35em 1.1em 0.5em;
+  border-radius: 14px;
+  color: #fff;
+  background: rgba(10, 20, 35, 0.72);
+  backdrop-filter: blur(4px);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  animation: ca-banner-pop 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  min-width: 34%;
+  white-space: nowrap;
+}
+
+.ca-banner__title {
+  font-size: clamp(1.6rem, 6vw, 3.4rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.ca-banner__subtitle {
+  font-size: clamp(0.7rem, 2.2vw, 1rem);
+  opacity: 0.9;
+  margin-top: 0.2em;
+  font-weight: 600;
+}
+
+.ca-banner--six .ca-banner__title { color: #fbbf24; }
+.ca-banner--four .ca-banner__title { color: #60a5fa; }
+.ca-banner--two .ca-banner__title { color: #4ade80; }
+.ca-banner--wicket { background: rgba(120, 10, 10, 0.78); border-color: rgba(255, 120, 120, 0.5); }
+.ca-banner--wicket .ca-banner__title { color: #fecaca; }
+
+@keyframes ca-banner-pop {
+  0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+/* ---- debug state label ---- */
+.ca-state-label {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  font: 600 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 7px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-shake .ca-svg,
+  .ca-cloud--a,
+  .ca-cloud--b { animation: none; }
+}

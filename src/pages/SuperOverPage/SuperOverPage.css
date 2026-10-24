@@ -1,0 +1,210 @@
+
+.super-over-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: radial-gradient(
+    circle at top,
+    #123b67 0,
+    #06152a 55%,
+    #020914 100%
+  );
+  color: #f5f8ff;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.super-over-card {
+  width: min(850px, 100%);
+  padding: clamp(22px, 4vw, 42px);
+  border: 1px solid rgba(255, 196, 0, 0.35);
+  border-radius: 22px;
+  background: rgba(5, 18, 38, 0.92);
+  box-shadow: 0 24px 80px #0008;
+  box-sizing: border-box;
+}
+
+.super-over-kicker {
+  color: #ffc400;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.super-over-card h1 {
+  margin: 10px 0;
+  color: #fff;
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 900;
+}
+
+.super-over-subtitle {
+  color: #b8c7dc;
+}
+
+.super-over-scoreboard,
+.super-over-final-scores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.super-over-team,
+.super-over-final-scores > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid #29405c;
+  border-radius: 14px;
+  background: #0b203a;
+}
+
+.super-over-team.active {
+  border-color: #ffc400;
+  box-shadow: 0 0 0 1px #ffc40055;
+}
+
+.super-over-team span,
+.super-over-final-scores span {
+  font-weight: 800;
+}
+
+.super-over-team strong,
+.super-over-final-scores strong {
+  font-size: 30px;
+  color: #ffc400;
+}
+
+.super-over-team small {
+  color: #9eb0c8;
+}
+
+.super-over-progress {
+  margin-top: 16px;
+  color: #ffc400;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.super-over-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  color: #ffc400;
+  font-size: 24px;
+}
+
+.super-over-question {
+  font-size: clamp(19px, 3vw, 26px);
+  line-height: 1.45;
+}
+
+.super-over-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.super-over-options button,
+.super-over-feedback button,
+.super-over-primary,
+.super-over-secondary,
+.super-over-card > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #36506d;
+  background: #102a49;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.super-over-options button {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.super-over-options button:hover:not(:disabled),
+.super-over-options button.selected {
+  border-color: #ffc400;
+  background: #203b5c;
+}
+
+.super-over-options button:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.super-over-feedback {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #0d2742;
+}
+
+.super-over-feedback strong {
+  color: #ffc400;
+}
+
+.super-over-feedback button,
+.super-over-primary {
+  background: linear-gradient(135deg, #ffc400, #e6a900);
+  color: #07172d;
+  border: 0;
+}
+
+.super-over-winner {
+  margin: 18px 0;
+  color: #ffc400;
+}
+
+.super-over-secondary {
+  margin-left: 10px;
+}
+
+.super-over-final-scores > div {
+  min-width: 0;
+}
+
+.super-over-final-scores span {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .super-over-scoreboard,
+  .super-over-final-scores,
+  .super-over-options {
+    grid-template-columns: 1fr;
+  }
+
+  .super-over-feedback {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .super-over-feedback button,
+  .super-over-primary,
+  .super-over-secondary {
+    width: 100%;
+    margin: 6px 0;
+  }
+
+  .super-over-card {
+    border-radius: 16px;
+  }
+}

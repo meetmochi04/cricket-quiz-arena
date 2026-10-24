@@ -1,0 +1,67 @@
+/* Cricket Quiz Arena — Toss coin animation fix
+   Append these rules at the END of TossPage.css.
+   Keeps the random result from TossPage.tsx and makes the visible coin
+   land on the same side as the generated result.
+*/
+
+.coin {
+  position: relative;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.coin-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.coin-front {
+  transform: rotateY(0deg) translateZ(1px);
+}
+
+.coin-back {
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+/* Do not let the generic initial-position rule override a toss animation. */
+.coin.coin-flipping-heads {
+  animation: coinFlipHeads 3s cubic-bezier(0.18, 0.72, 0.22, 1) forwards !important;
+}
+
+.coin.coin-flipping-tails {
+  animation: coinFlipTails 3s cubic-bezier(0.18, 0.72, 0.22, 1) forwards !important;
+}
+
+/* Final resting positions: heads = front face, tails = back face. */
+.coin.coin-show-heads {
+  animation: none !important;
+  transform: rotateY(2160deg) translateY(0) scale(1) !important;
+}
+
+.coin.coin-show-tails {
+  animation: none !important;
+  transform: rotateY(2340deg) translateY(0) scale(1) !important;
+}
+
+@keyframes coinFlipHeads {
+  0%   { transform: rotateY(0deg) translateY(0) scale(1); }
+  12%  { transform: rotateY(540deg) translateY(-45px) scale(1.08); }
+  32%  { transform: rotateY(1260deg) translateY(-105px) scale(1.14); }
+  55%  { transform: rotateY(1800deg) translateY(-70px) scale(1.1); }
+  76%  { transform: rotateY(1980deg) translateY(-24px) scale(1.04); }
+  90%  { transform: rotateY(2100deg) translateY(5px) scale(0.98); }
+  100% { transform: rotateY(2160deg) translateY(0) scale(1); }
+}
+
+@keyframes coinFlipTails {
+  0%   { transform: rotateY(0deg) translateY(0) scale(1); }
+  12%  { transform: rotateY(540deg) translateY(-45px) scale(1.08); }
+  32%  { transform: rotateY(1260deg) translateY(-105px) scale(1.14); }
+  55%  { transform: rotateY(1980deg) translateY(-70px) scale(1.1); }
+  76%  { transform: rotateY(2160deg) translateY(-24px) scale(1.04); }
+  90%  { transform: rotateY(2280deg) translateY(5px) scale(0.98); }
+  100% { transform: rotateY(2340deg) translateY(0) scale(1); }
+}
