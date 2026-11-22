@@ -16,7 +16,6 @@ import {
 import "./QuestionBank.css";
 
 import {
-  getMatchSetup,
   addQuestions,
 } from "../../firebase/firestore";
 
@@ -705,7 +704,7 @@ export default function QuestionBankPage() {
         requiredQuestions
       );
 
-      const response = await fetch("http://localhost:3001/api/generate-questions", {
+      const response = await fetch("/api/generate-questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

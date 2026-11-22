@@ -6,7 +6,7 @@
  */
 
 /** What the game is currently doing. Owned by the parent page. */
-export type GamePhase = 'bowling' | 'question' | 'result';
+export type GamePhase = 'select' | 'bowling' | 'question' | 'result';
 
 /** Result decided by the EXISTING game logic. Never calculated here. */
 export type BallResult = 'six' | 'four' | 'two' | 'wicket';

@@ -3,6 +3,13 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distPath = path.resolve(__dirname, "../dist");
 
 dotenv.config({ path: new URL("./.env", import.meta.url) });
 
@@ -335,6 +342,18 @@ app.post("/api/generate-commentary-audio", async (req, res) => {
   }
 });
 
+
+// Serve the React frontend
+app.use(express.static(distPath));
+
+// Handle frontend routes (React SPA)
+app.use((req, res, next) => {
+  if (req.method !== "GET" || req.path.startsWith("/api/")) {
+    return next();
+  }
+
+  res.sendFile(path.join(distPath, "index.html"));
+});
 // ========================================
 // START SERVER
 // ========================================

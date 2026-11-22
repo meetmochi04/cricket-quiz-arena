@@ -208,3 +208,104 @@
     border-radius: 16px;
   }
 }
+
+.super-over-setup {
+  text-align: center;
+}
+
+.super-over-team-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.super-over-team-preview > div {
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.super-over-team-preview span {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.super-over-team-preview strong {
+  font-size: 18px;
+}
+
+.super-over-upload {
+  padding: 28px 18px;
+  margin: 22px 0;
+  border: 2px dashed rgba(255,255,255,0.3);
+  border-radius: 16px;
+}
+
+.super-over-upload > svg {
+  font-size: 38px;
+  margin-bottom: 12px;
+}
+
+.super-over-upload h2 {
+  margin: 8px 0;
+}
+
+.super-over-upload p {
+  line-height: 1.6;
+}
+
+.super-over-file-name {
+  margin-top: 16px;
+  overflow-wrap: anywhere;
+}
+
+.super-over-success {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.super-over-error {
+  color: #f87171;
+  font-weight: 700;
+}
+
+.super-over-question-count {
+  font-weight: 700;
+}
+
+.super-over-start {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.super-over-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.super-over-animation {
+  width: 100%;
+  margin: 18px 0;
+}
+
+.super-over-delivery {
+  margin: 20px 0;
+}
+
+.super-over-delivery h2 {
+  margin-bottom: 14px;
+}
+
+@media (max-width: 600px) {
+  .super-over-team-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .super-over-upload {
+    padding: 20px 12px;
+  }
+}

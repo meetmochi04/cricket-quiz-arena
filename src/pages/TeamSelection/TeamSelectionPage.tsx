@@ -295,24 +295,16 @@ export default function TeamSelectionPage() {
       return;
 
     }
+try {
+  setAddingTeam(true);
 
-    try {
-
-      setAddingTeam(true);
-
-      const createdId =
-
-        await createTeam({
-
-          name: name.toUpperCase(),
-
-          shortName,
-
-          logo: logo.toUpperCase(),
-
-          color: newTeamColor,
-
-        });
+  const createdId = await createTeam({
+    name: name.toUpperCase(),
+    shortName,
+    logo: logo.toUpperCase(),
+    color: newTeamColor,
+    active: true,
+  });
 
       const createdTeam: Team = {
 

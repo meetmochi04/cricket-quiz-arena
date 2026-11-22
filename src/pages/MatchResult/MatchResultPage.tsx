@@ -1,7 +1,9 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase";
+
 import {
   FaArrowLeft,
   FaHome,
@@ -10,6 +12,7 @@ import {
   FaBullseye,
   FaCheckCircle,
 } from "react-icons/fa";
+
 import "./MatchResult.css";
 
 interface InningsScore {
@@ -36,6 +39,13 @@ interface MatchSetup {
   questionCount?: number;
 }
 
+interface SuperOverResult {
+  overNumber: number;
+  teamAScore: InningsScore;
+  teamBScore: InningsScore;
+  winner: string;
+}
+
 export default function MatchResultPage() {
   const navigate = useNavigate();
 
@@ -51,18 +61,15 @@ export default function MatchResultPage() {
   const [setup, setSetup] =
     useState<MatchSetup | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [superOverResult, setSuperOverResult] =
+    useState<SuperOverResult | null>(null);
 
-  const [saving, setSaving] =
-    useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
-  const [saved, setSaved] =
-    useState(false);
-
-  const [saveError, setSaveError] =
-    useState("");
-
+  // LOAD MATCH DATA
   useEffect(() => {
     try {
       const savedFirst =
@@ -77,16 +84,16 @@ export default function MatchResultPage() {
       const savedSetup =
         sessionStorage.getItem("matchSetup");
 
+      const savedSuperOver =
+        sessionStorage.getItem("superOverResult");
+
       if (!savedFirst || !savedSecond) {
         navigate("/second-innings");
         return;
       }
 
-      const first =
-        JSON.parse(savedFirst);
-
-      const second =
-        JSON.parse(savedSecond);
+      const first = JSON.parse(savedFirst);
+      const second = JSON.parse(savedSecond);
 
       setFirstInnings(first);
       setSecondInnings(second);
@@ -97,6 +104,12 @@ export default function MatchResultPage() {
 
       if (savedSetup) {
         setSetup(JSON.parse(savedSetup));
+      }
+
+      if (savedSuperOver) {
+        setSuperOverResult(
+          JSON.parse(savedSuperOver)
+        );
       }
     } catch (error) {
       console.error(
@@ -110,6 +123,129 @@ export default function MatchResultPage() {
     }
   }, [navigate]);
 
+  // TARGET
+  const target = useMemo(() => {
+    if (!firstInnings) return 0;
+
+    return firstInnings.runs + 1;
+  }, [firstInnings]);
+
+  // TOTAL QUESTIONS
+  const totalQuestions =
+    setup?.questionCount ||
+    (setup?.overs || 0) * 6;
+
+  // OVERS DISPLAY
+  const firstOvers = firstInnings
+    ? `${Math.floor(firstInnings.balls / 6)}.${firstInnings.balls % 6}`
+    : "0.0";
+
+  const secondOvers = secondInnings
+    ? `${Math.floor(secondInnings.balls / 6)}.${secondInnings.balls % 6}`
+    : "0.0";
+
+  // MATCH RESULT CALCULATION
+  const matchResult = useMemo(() => {
+    if (
+      !firstInnings ||
+      !secondInnings ||
+      !teams
+    ) {
+      return null;
+    }
+
+    // SUPER OVER RESULT
+    if (superOverResult) {
+      return {
+        winner: superOverResult.winner,
+        winnerTeam:
+          superOverResult.winner === teams.teamA.name
+            ? "teamA"
+            : "teamB",
+        title: `${superOverResult.winner} WON`,
+        subtitle: `BY SUPER OVER ${superOverResult.overNumber}`,
+        margin: `SUPER OVER ${superOverResult.overNumber}`,
+      };
+    }
+
+    // TEAM B REACHED TARGET
+    if (secondInnings.runs >= target) {
+      const wicketsRemaining = Math.max(
+        0,
+        (setup?.playersPerTeam || 7) -
+          secondInnings.wickets
+      );
+
+      return {
+        winner: teams.teamB.name,
+        winnerTeam: "teamB",
+        title: `${teams.teamB.name} WON`,
+        subtitle: `BY ${wicketsRemaining} WICKET${
+          wicketsRemaining === 1 ? "" : "S"
+        }`,
+        margin: `${wicketsRemaining} WICKET${
+          wicketsRemaining === 1 ? "" : "S"
+        }`,
+      };
+    }
+
+    // MATCH TIE
+    if (firstInnings.runs === secondInnings.runs) {
+      return {
+        winner: "MATCH TIED",
+        winnerTeam: "tie",
+        title: "MATCH TIED",
+        subtitle: "SUPER OVER REQUIRED",
+        margin: "TIE",
+      };
+    }
+
+    // TEAM A WON
+    const runDifference =
+      firstInnings.runs - secondInnings.runs;
+
+    return {
+      winner: teams.teamA.name,
+      winnerTeam: "teamA",
+      title: `${teams.teamA.name} WON`,
+      subtitle: `BY ${runDifference} RUN${
+        runDifference === 1 ? "" : "S"
+      }`,
+      margin: `${runDifference} RUN${
+        runDifference === 1 ? "" : "S"
+      }`,
+    };
+  }, [
+    firstInnings,
+    secondInnings,
+    teams,
+    target,
+    setup,
+    superOverResult,
+  ]);
+
+// AUTOMATIC SUPER OVER REDIRECT
+useEffect(() => {
+  if (
+    !loading &&
+    matchResult?.winnerTeam === "tie" &&
+    !superOverResult
+  ) {
+    sessionStorage.removeItem("superOverResult");
+    sessionStorage.setItem("superOverNumber", "1");
+
+    navigate("/super-over", {
+      replace: true,
+    });
+  }
+}, [
+  loading,
+  matchResult,
+  superOverResult,
+  navigate,
+]);
+
+  // SAVE MATCH TO FIREBASE
   const handleSaveMatch = async () => {
     if (
       saving ||
@@ -117,7 +253,8 @@ export default function MatchResultPage() {
       !firstInnings ||
       !secondInnings ||
       !teams ||
-      !matchResult
+      !matchResult ||
+      matchResult.winnerTeam === "tie"
     ) {
       return;
     }
@@ -157,6 +294,9 @@ export default function MatchResultPage() {
         firstInnings,
         secondInnings,
 
+        // SUPER OVER DATA
+        superOverResult: superOverResult || null,
+
         winner: {
           team: matchResult.winnerTeam,
           name: matchResult.winner,
@@ -177,13 +317,25 @@ export default function MatchResultPage() {
         matchData
       );
 
-      sessionStorage.setItem("matchCompleted", "true");
-      sessionStorage.setItem("savedMatchId", matchRef.id);
+      sessionStorage.setItem(
+        "matchCompleted",
+        "true"
+      );
+
+      sessionStorage.setItem(
+        "savedMatchId",
+        matchRef.id
+      );
 
       setSaved(true);
+
       navigate("/history");
     } catch (error) {
-      console.error("Unable to save match:", error);
+      console.error(
+        "Unable to save match:",
+        error
+      );
+
       setSaveError(
         "Match save nahi thai. Firebase connection ane Firestore permissions check karo."
       );
@@ -192,93 +344,7 @@ export default function MatchResultPage() {
     }
   };
 
-  const target = useMemo(() => {
-    if (!firstInnings) return 0;
-
-    return firstInnings.runs + 1;
-  }, [firstInnings]);
-
-  const matchResult = useMemo(() => {
-    if (
-      !firstInnings ||
-      !secondInnings ||
-      !teams
-    ) {
-      return null;
-    }
-
-    /*
-      SECOND INNINGS REACHED TARGET
-    */
-
-    if (secondInnings.runs >= target) {
-      const wicketsRemaining =
-        Math.max(
-          0,
-          (setup?.playersPerTeam || 7) -
-            secondInnings.wickets
-        );
-
-      return {
-        winner: teams.teamB.name,
-        winnerTeam: "teamB",
-        title: `${teams.teamB.name} WON`,
-        subtitle: `BY ${wicketsRemaining} WICKET${
-          wicketsRemaining === 1
-            ? ""
-            : "S"
-        }`,
-        margin: `${wicketsRemaining} WICKET${
-          wicketsRemaining === 1
-            ? ""
-            : "S"
-        }`,
-      };
-    }
-
-    /*
-      FIRST INNINGS TEAM WON
-    */
-
-    const runDifference =
-      firstInnings.runs -
-      secondInnings.runs;
-
-    return {
-      winner: teams.teamA.name,
-      winnerTeam: "teamA",
-      title: `${teams.teamA.name} WON`,
-      subtitle: `BY ${runDifference} RUN${
-        runDifference === 1
-          ? ""
-          : "S"
-      }`,
-      margin: `${runDifference} RUN${
-        runDifference === 1
-          ? ""
-          : "S"
-      }`,
-    };
-  }, [
-    firstInnings,
-    secondInnings,
-    teams,
-    target,
-    setup,
-  ]);
-
-  const firstOvers = firstInnings
-    ? `${Math.floor(firstInnings.balls / 6)}.${firstInnings.balls % 6}`
-    : "0.0";
-
-  const secondOvers = secondInnings
-    ? `${Math.floor(secondInnings.balls / 6)}.${secondInnings.balls % 6}`
-    : "0.0";
-
-  const totalQuestions =
-    setup?.questionCount ||
-    (setup?.overs || 0) * 6;
-
+  // LOADING SCREEN
   if (loading) {
     return (
       <main className="match-result-page loading">
@@ -289,6 +355,7 @@ export default function MatchResultPage() {
     );
   }
 
+  // INVALID RESULT
   if (
     !firstInnings ||
     !secondInnings ||
@@ -304,18 +371,27 @@ export default function MatchResultPage() {
     );
   }
 
+  // TIE REDIRECT SCREEN
+  if (matchResult.winnerTeam === "tie") {
+    return (
+      <main className="match-result-page loading">
+        <div className="result-loading">
+          Match tied! Starting Super Over...
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="match-result-page">
 
       {/* BACKGROUND */}
-
       <div className="result-background">
         <div className="result-glow glow-one" />
         <div className="result-glow glow-two" />
       </div>
 
       {/* HEADER */}
-
       <header className="result-header">
 
         <button
@@ -341,45 +417,39 @@ export default function MatchResultPage() {
       </header>
 
       {/* MAIN */}
-
       <section className="result-content">
 
         {/* TROPHY */}
-
         <div className="result-trophy">
           <div className="trophy-circle">
             <FaTrophy />
           </div>
 
-          <span>MATCH COMPLETED</span>
+          <span>
+            {superOverResult
+              ? "SUPER OVER COMPLETED"
+              : "MATCH COMPLETED"}
+          </span>
         </div>
 
         {/* WINNER */}
-
         <div className="winner-section">
 
           <small>WINNER</small>
 
-          <h2>
-            {matchResult.winner}
-          </h2>
+          <h2>{matchResult.winner}</h2>
 
-          <strong>
-            {matchResult.subtitle}
-          </strong>
+          <strong>{matchResult.subtitle}</strong>
 
         </div>
 
         {/* SCORECARD */}
-
         <div className="final-scorecard">
 
           {/* TEAM A */}
-
           <div
             className={`final-team ${
-              matchResult.winnerTeam ===
-              "teamA"
+              matchResult.winnerTeam === "teamA"
                 ? "winner"
                 : ""
             }`}
@@ -387,7 +457,10 @@ export default function MatchResultPage() {
 
             <div className="team-logo">
               <span>
-                {(teams.teamA.shortName || teams.teamA.name)
+                {(
+                  teams.teamA.shortName ||
+                  teams.teamA.name
+                )
                   .trim()
                   .slice(0, 3)
                   .toUpperCase()}
@@ -396,26 +469,18 @@ export default function MatchResultPage() {
 
             <div className="team-info">
 
-              <span>
-                {teams.teamA.name}
-              </span>
+              <span>{teams.teamA.name}</span>
 
               <strong>
                 {firstInnings.runs}
-                <small>
-                  /
-                  {firstInnings.wickets}
-                </small>
+                <small>/{firstInnings.wickets}</small>
               </strong>
 
-              <em>
-                {firstOvers} OVERS
-              </em>
+              <em>{firstOvers} OVERS</em>
 
             </div>
 
-            {matchResult.winnerTeam ===
-              "teamA" && (
+            {matchResult.winnerTeam === "teamA" && (
               <div className="winner-badge">
                 <FaTrophy />
                 WINNER
@@ -425,17 +490,14 @@ export default function MatchResultPage() {
           </div>
 
           {/* VS */}
-
           <div className="versus">
             <span>VS</span>
           </div>
 
           {/* TEAM B */}
-
           <div
             className={`final-team ${
-              matchResult.winnerTeam ===
-              "teamB"
+              matchResult.winnerTeam === "teamB"
                 ? "winner"
                 : ""
             }`}
@@ -443,7 +505,10 @@ export default function MatchResultPage() {
 
             <div className="team-logo">
               <span>
-                {(teams.teamB.shortName || teams.teamB.name)
+                {(
+                  teams.teamB.shortName ||
+                  teams.teamB.name
+                )
                   .trim()
                   .slice(0, 3)
                   .toUpperCase()}
@@ -452,26 +517,18 @@ export default function MatchResultPage() {
 
             <div className="team-info">
 
-              <span>
-                {teams.teamB.name}
-              </span>
+              <span>{teams.teamB.name}</span>
 
               <strong>
                 {secondInnings.runs}
-                <small>
-                  /
-                  {secondInnings.wickets}
-                </small>
+                <small>/{secondInnings.wickets}</small>
               </strong>
 
-              <em>
-                {secondOvers} OVERS
-              </em>
+              <em>{secondOvers} OVERS</em>
 
             </div>
 
-            {matchResult.winnerTeam ===
-              "teamB" && (
+            {matchResult.winnerTeam === "teamB" && (
               <div className="winner-badge">
                 <FaTrophy />
                 WINNER
@@ -482,8 +539,36 @@ export default function MatchResultPage() {
 
         </div>
 
-        {/* RESULT STRIP */}
+        {/* SUPER OVER SCORE DETAILS */}
+        {superOverResult && (
+          <div className="match-details">
+            <div className="details-heading">
+              SUPER OVER {superOverResult.overNumber} SCORE
+            </div>
 
+            <div className="details-grid">
+
+              <div>
+                <span>{teams.teamA.name}</span>
+                <strong>
+                  {superOverResult.teamAScore.runs}/
+                  {superOverResult.teamAScore.wickets}
+                </strong>
+              </div>
+
+              <div>
+                <span>{teams.teamB.name}</span>
+                <strong>
+                  {superOverResult.teamBScore.runs}/
+                  {superOverResult.teamBScore.wickets}
+                </strong>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* RESULT STRIP */}
         <div className="result-strip">
 
           <FaTrophy />
@@ -500,7 +585,6 @@ export default function MatchResultPage() {
         </div>
 
         {/* MATCH STATS */}
-
         <div className="match-stats">
 
           <div className="stat-card">
@@ -509,9 +593,7 @@ export default function MatchResultPage() {
 
             <span>TARGET</span>
 
-            <strong>
-              {target}
-            </strong>
+            <strong>{target}</strong>
 
             <small>RUNS</small>
 
@@ -521,18 +603,25 @@ export default function MatchResultPage() {
 
             <FaTrophy />
 
-            <span>WIN MARGIN</span>
+            <span>
+              {superOverResult
+                ? "RESULT"
+                : "WIN MARGIN"}
+            </span>
 
             <strong>
-              {matchResult.margin
-                .split(" ")[0]}
+              {superOverResult
+                ? "SO"
+                : matchResult.margin.split(" ")[0]}
             </strong>
 
             <small>
-              {matchResult.margin
-                .split(" ")
-                .slice(1)
-                .join(" ")}
+              {superOverResult
+                ? `SUPER OVER ${superOverResult.overNumber}`
+                : matchResult.margin
+                    .split(" ")
+                    .slice(1)
+                    .join(" ")}
             </small>
 
           </div>
@@ -541,9 +630,7 @@ export default function MatchResultPage() {
 
             <span>OVERS</span>
 
-            <strong>
-              {setup?.overs || 0}
-            </strong>
+            <strong>{setup?.overs || 0}</strong>
 
             <small>PER INNINGS</small>
 
@@ -553,9 +640,7 @@ export default function MatchResultPage() {
 
             <span>QUESTIONS</span>
 
-            <strong>
-              {totalQuestions}
-            </strong>
+            <strong>{totalQuestions}</strong>
 
             <small>TOTAL</small>
 
@@ -564,7 +649,6 @@ export default function MatchResultPage() {
         </div>
 
         {/* MATCH DETAILS */}
-
         <div className="match-details">
 
           <div className="details-heading">
@@ -575,9 +659,7 @@ export default function MatchResultPage() {
 
             <div>
               <span>WINNER</span>
-              <strong>
-                {matchResult.winner}
-              </strong>
+              <strong>{matchResult.winner}</strong>
             </div>
 
             <div>
@@ -598,23 +680,17 @@ export default function MatchResultPage() {
 
             <div>
               <span>TARGET</span>
-              <strong>
-                {target} RUNS
-              </strong>
+              <strong>{target} RUNS</strong>
             </div>
 
             <div>
               <span>FIRST OVERS</span>
-              <strong>
-                {firstOvers}
-              </strong>
+              <strong>{firstOvers}</strong>
             </div>
 
             <div>
               <span>SECOND OVERS</span>
-              <strong>
-                {secondOvers}
-              </strong>
+              <strong>{secondOvers}</strong>
             </div>
 
           </div>
@@ -622,9 +698,11 @@ export default function MatchResultPage() {
         </div>
 
         {/* ACTIONS */}
-
         {saveError && (
-          <div className="save-error" role="alert">
+          <div
+            className="save-error"
+            role="alert"
+          >
             {saveError}
           </div>
         )}
@@ -639,6 +717,7 @@ export default function MatchResultPage() {
             disabled={saving || saved}
           >
             <FaCheckCircle />
+
             {saving
               ? "SAVING..."
               : saved
@@ -669,7 +748,6 @@ export default function MatchResultPage() {
       </section>
 
       {/* FOOTER */}
-
       <footer className="result-footer">
         CRICKET QUIZ ARENA
         <span>•</span>

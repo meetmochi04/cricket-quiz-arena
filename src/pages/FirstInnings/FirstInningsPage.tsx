@@ -167,7 +167,7 @@ export function InningsGamePage({
   const [commentaryLoading, setCommentaryLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
-  const [bowlingStage, setBowlingStage] =
+  const [, setBowlingStage] =
     useState<
       "idle" |
       "runup" |
@@ -351,7 +351,7 @@ export function InningsGamePage({
       }
 
       const response = await fetch(
-        "http://localhost:3001/api/generate-commentary-audio",
+        "/api/generate-commentary-audio",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -424,7 +424,7 @@ export function InningsGamePage({
 
     try {
       const response = await fetch(
-        "http://localhost:3001/api/generate-commentary",
+        "/api/generate-commentary",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
